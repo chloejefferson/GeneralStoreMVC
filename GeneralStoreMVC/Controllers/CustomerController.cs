@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Net;
+using System.Data.Entity;
 
 namespace GeneralStoreMVC.Controllers
 {
@@ -34,6 +36,65 @@ namespace GeneralStoreMVC.Controllers
             if (ModelState.IsValid)
             {
                 _db.Customers.Add(customer);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(customer);
+        }
+
+        //GET: Delete
+        // Customer/Delete/{id}
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Customer customer = _db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+            return View(customer);
+        }
+
+        //POST: Delete
+        // Customer/Delete/{id}
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            Customer customer = _db.Customers.Find(id);
+            _db.Customers.Remove(customer);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        //GET: Edit
+        // Customer/Edit/{id}
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Customer customer = _db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+            return View(customer);
+        }
+
+        //POST: Edit
+        //Customer/Edit/{id}
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult Edit(Customer customer)
+        {
+            if(ModelState.IsValid)
+            {
+                _db.Entry(customer).State = EntityState.Modified;
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
